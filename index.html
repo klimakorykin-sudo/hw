@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="description" content="5 правил работы за компьютером — интерактивные пиктограммы">
+<title>5 правил работы за компьютером</title>
+<style>
+/* ТУТ Я ЗАДАЮ ЦВЕТА И РАЗМЕРЫ ЧЕРЕЗ ПЕРЕМЕННЫЕ
+   чтобы потом менять в одном месте, а не искать по всему коду*/
+:root {
+  --bg: #0a0a0f;
+  --card: rgba(255, 255, 255, 0.025);
+  --card-hover: rgba(255, 255, 255, 0.045);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --text: #f5f5f7;
+  --text-dim: #7a7a8c;
+  --text-faint: #4a4a58;
+  --accent: #6366f1;
+  --accent-2: #a855f7;
+  --ok: #10b981;
+  --no: #ef4444;
+  --hl: #818cf8;
+  --radius: 24px;
+}
+
+/* сбрасываю отступы у всего, чтобы браузер не добавлял свои */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* clamp() — это чтобы отступы сами подстраивались под размер экрана */
+  padding: clamp(32px, 6vw, 80px) clamp(16px, 4vw, 32px) clamp(60px, 8vw, 100px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  letter-spacing: -0.011em;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* фоновая сетка как в фигме, просто для красоты */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* фиолетовое свечение сверху, тоже декор */
+body::after {
+  content: '';
+  position: fixed;
+  top: -300px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 60%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ШАПКА САЙТА */
+.header {
+  text-align: center;
+  margin-bottom: clamp(48px, 7vw, 72px);
+  max-width: 680px;
+  position: relative;
+  z-index: 2;
+}
+
+/* маленькая плашка "Computer Rules" */
+.header__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  padding: 7px 16px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* точка, которая мигает */
+.header__tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: pulseDot 2.4s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.header__title {
+  font-size: clamp(1.9rem, 5.5vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+
+/* градиентный текст для слова "работы" */
+.header__title em {
+  font-style: normal;
+  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f0abfc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header__subtitle {
+  color: var(--text-dim);
+  font-size: clamp(0.88rem, 2vw, 1rem);
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+/* СЕТКА КАРТОЧЕК
+   auto-fit — карточки сами переносятся если не влезают */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: clamp(14px, 1.8vw, 20px);
+  max-width: 1240px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+/* КАРТОЧКА ПРАВИЛА */
+.card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.4s cubic-bezier(.2,.9,.3,1),
+    box-shadow 0.4s ease;
+  user-select: none;
+  outline: none;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(.2,.9,.3,1) forwards;
+}
+/* задержка появления для каждой карточки — типа волна */
+.card:nth-child(1) { animation-delay: 0.06s; }
+.card:nth-child(2) { animation-delay: 0.12s; }
+.card:nth-child(3) { animation-delay: 0.18s; }
+.card:nth-child(4) { animation-delay: 0.24s; }
+.card:nth-child(5) { animation-delay: 0.30s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* при наведении карточка приподнимается */
+.card:hover,
+.card:focus-visible {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-5px);
+  box-shadow:
+    0 30px 60px -30px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+
+/* обводка когда карточка выбрана с клавиатуры (tab) */
+.card:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.4),
+    0 30px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.card:active { transform: translateY(-2px) scale(0.995); }
+
+/* блик который следует за курсором — через JS задаю --mx и --my */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    500px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(99, 102, 241, 0.15),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  z-index: 1;
+}
+.card:hover::before { opacity: 1; }
+
+/* полоска сверху карточки */
+.card__bar {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent);
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  position: relative;
+  z-index: 2;
+}
+.card:hover .card__bar { opacity: 1; }
+
+/* индикатор справа сверху — загорается зелёным когда карточка открыта */
+.card__status {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+  z-index: 3;
+}
+
+.card.is-open .card__status {
+  background: var(--ok);
+  box-shadow:
+    0 0 0 4px rgba(16, 185, 129, 0.12),
+    0 0 12px rgba(16, 185, 129, 0.6);
+  transform: scale(1.15);
+}
+
+.card__body {
+  padding: clamp(24px, 3vw, 32px) clamp(24px, 3vw, 28px) clamp(26px, 3vw, 32px);
+  position: relative;
+  z-index: 2;
+}
+
+/* типа "RULE_01" моноширинным шрифтом */
+.card__id {
+  font-family: 'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--text-faint);
+  letter-spacing: 0.16em;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card__id::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+/* ЗНАК — КВАДРАТИК С ПИКТОГРАММОЙ*/
+.sign {
+  width: 88px;
+  height: 88px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1a1a24 0%, #14141c 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 20px -8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.5s cubic-bezier(.2,1.4,.4,1), border-color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.sign::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 0%, rgba(99,102,241,0.15), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.card:hover .sign::before { opacity: 1; }
+
+/* при наведении знак чуть увеличивается и наклоняется */
+.card:hover .sign,
+.card:focus-visible .sign {
+  transform: scale(1.04) rotate(-2deg);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.sign svg {
+  width: 60px;
+  height: 60px;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+/* цвета для SVG — чтобы не писать fill в каждом элементе */
+.sign .ink { fill: #f5f5f7; }
+.sign .dim { fill: #4a4a58; }
+.sign .bg  { fill: #1a1a24; }
+.sign .ok  { fill: var(--ok); }
+.sign .no  { fill: var(--no); }
+.sign .hl  { fill: var(--hl); }
+
+/* ТЕКСТ В КАРТОЧКЕ */
+.card__title {
+  font-size: clamp(1rem, 2vw, 1.08rem);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.card__hint {
+  font-size: clamp(0.83rem, 1.6vw, 0.89rem);
+  color: var(--text-dim);
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+/* скрытая часть — раскрывается при клике */
+.card__details {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.45s cubic-bezier(.2,.9,.3,1),
+    opacity 0.3s ease,
+    margin-top 0.3s ease;
+}
+.card.is-open .card__details {
+  max-height: 220px;
+  opacity: 1;
+  margin-top: 18px;
+}
+.card__details p {
+  font-size: clamp(0.8rem, 1.5vw, 0.86rem);
+  color: var(--text-dim);
+  line-height: 1.65;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-weight: 400;
+}
+
+/* ПОЛОСА ПРОГРЕССА СВЕРХУ ЭКРАНА*/
+.progress-wrap {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.02);
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.7s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.7);
+}
+
+/* ПОДВАЛ*/
+.footer {
+  margin-top: clamp(48px, 8vw, 88px);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+
+/* счётчик "Изучено: 0 / 5" */
+.footer__progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 22px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  font-family: 'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  transition: all 0.4s;
+}
+
+.footer__progress strong {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* когда всё изучено — счётчик становится зелёным */
+.footer__progress.done {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 30px -10px rgba(16, 185, 129, 0.4);
+}
+.footer__progress.done strong { color: var(--ok); }
+
+.footer__credit {
+  color: var(--text-faint);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  font-family: 'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+}
+
+/* канвас для конфетти */
+#confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/*АДАПТИВ — под телефоны и планшеты */
+@media (max-width: 480px) {
+  .sign {
+    width: 76px;
+    height: 76px;
+    border-radius: 18px;
+  }
+  .sign svg { width: 52px; height: 52px; }
+  .card__id { margin-bottom: 20px; }
+}
+
+@media (min-width: 640px) and (max-width: 920px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* для тех у кого в настройках отключена анимация */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+  <!-- ШАПКА: заголовок и подзаголовок -->
+  <header class="header">
+    <span class="header__tag">Computer Rules</span>
+    <h1 class="header__title">Пять правил <em>работы</em> за&nbsp;компьютером</h1>
+    <p class="header__subtitle">Нажми на карточку, чтобы раскрыть правило. Прогресс сохраняется автоматически.</p>
+  </header>
+
+  <!-- СЕТКА С 5 КАРТОЧКАМИ-ПРАВИЛАМИ -->
+  <main class="grid" aria-label="Правила работы за компьютером">
+
+    <!--  ПРАВИЛО 1 — ОСАНКА
+         Слева прямая спина (правильно), справа кривая и перечёркнута -->
+    <article class="card" tabindex="0" role="button" aria-expanded="false" data-rule="01">
+      <div class="card__bar"></div>
+      <span class="card__status" aria-hidden="true"></span>
+      <div class="card__body">
+        <div class="card__id">RULE_01</div>
+        <div class="sign" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <!-- слева: прямая спина — это правильно -->
+            <circle cx="22" cy="18" r="7" class="ink"/>
+            <rect x="20" y="28" width="5" height="42" rx="2.5" class="ink"/>
+            <rect x="12" y="50" width="20" height="5" rx="2.5" class="ink"/>
+            <rect x="20" y="70" width="5" height="16" rx="2.5" class="ink"/>
+            <rect x="20" y="83" width="14" height="5" rx="2.5" class="ink"/>
+
+            <!-- справа: кривая спина — неправильно -->
+            <circle cx="72" cy="18" r="7" class="dim"/>
+            <path d="M72 28 Q65 50 75 70" stroke="#4a4a58" stroke-width="5"
+                  fill="none" stroke-linecap="round"/>
+            <rect x="66" y="50" width="20" height="5" rx="2.5" class="dim"/>
+            <rect x="70" y="70" width="5" height="16" rx="2.5" class="dim"/>
+            <rect x="70" y="83" width="14" height="5" rx="2.5" class="dim"/>
+
+            <!-- красная линия перечёркивает неправильную позу -->
+            <line x1="58" y1="18" x2="88" y2="88"
+                  stroke="#ef4444" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 class="card__title">Правильная осанка</h2>
+        <p class="card__hint">Спина прямая, ноги на полу</p>
+        <div class="card__details">
+          <p>Экран — на уровне глаз. Сутулость — главная причина болей в спине у школьников. Сиди ровно — позвоночник скажет спасибо через 10 лет.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ПРАВИЛО 2 — РАССТОЯНИЕ
+         Глаз смотрит на монитор, между ними стрелка -->
+    <article class="card" tabindex="0" role="button" aria-expanded="false" data-rule="02">
+      <div class="card__bar"></div>
+      <span class="card__status" aria-hidden="true"></span>
+      <div class="card__body">
+        <div class="card__id">RULE_02</div>
+        <div class="sign" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <!-- глаз -->
+            <path d="M8 42 Q26 24 44 42 Q26 60 8 42 Z" class="ink"/>
+            <circle cx="26" cy="42" r="5" class="bg"/>
+            <circle cx="26" cy="42" r="2.5" class="hl"/>
+
+            <!-- стрелка от глаза к монитору -->
+            <line x1="48" y1="42" x2="58" y2="42"
+                  stroke="#818cf8" stroke-width="3" stroke-linecap="round"/>
+            <polygon points="58,36 66,42 58,48" class="hl"/>
+
+            <!-- монитор -->
+            <rect x="68" y="28" width="26" height="22" rx="3" class="ink"/>
+            <rect x="78" y="50" width="6" height="8" class="ink"/>
+            <rect x="72" y="58" width="18" height="3" rx="1.5" class="ink"/>
+          </svg>
+        </div>
+        <h2 class="card__title">Расстояние 50–70 см</h2>
+        <p class="card__hint">Экран на вытянутую руку</p>
+        <div class="card__details">
+          <p>Вытяни руку — пальцы почти касаются монитора. Ближе нельзя: зрение сядет. Верх экрана — чуть ниже уровня глаз.</p>
+        </div>
+      </div>
+    </article>
+
+    <!--ПРАВИЛО 3 — ПЕРЕРЫВ
+         Круговая стрелка (цикл) и цифра 30 -->
+    <article class="card" tabindex="0" role="button" aria-expanded="false" data-rule="03">
+      <div class="card__bar"></div>
+      <span class="card__status" aria-hidden="true"></span>
+      <div class="card__body">
+        <div class="card__id">RULE_03</div>
+        <div class="sign" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <!-- круглая стрелка — типа цикл -->
+            <path d="M50 18 A32 32 0 1 1 18 50"
+                  stroke="#f5f5f7" stroke-width="7"
+                  fill="none" stroke-linecap="round"/>
+            <!-- наконечник стрелки -->
+            <polygon points="10,42 18,58 28,46" class="ink"/>
+            <!-- цифра 30 по центру -->
+            <text x="50" y="60" text-anchor="middle"
+                  font-family="Arial, Helvetica, sans-serif"
+                  font-size="26" font-weight="700"
+                  fill="#818cf8">30</text>
+          </svg>
+        </div>
+        <h2 class="card__title">Перерыв каждые 30 минут</h2>
+        <p class="card__hint">Встань, разомнись, посмотри в окно</p>
+        <div class="card__details">
+          <p>Правило 20-20-20: каждые 20 минут смотри 20 секунд на объект в 20 метрах. Раз в полчаса вставай и разминайся.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ПРАВИЛО 4 — НЕ ЕСТЬ РЯДОМ
+         Чашка и красный знак "нельзя" -->
+    <article class="card" tabindex="0" role="button" aria-expanded="false" data-rule="04">
+      <div class="card__bar"></div>
+      <span class="card__status" aria-hidden="true"></span>
+      <div class="card__body">
+        <div class="card__id">RULE_04</div>
+        <div class="sign" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <!-- чашка -->
+            <rect x="20" y="30" width="42" height="46" rx="5" class="ink"/>
+            <!-- ручка -->
+            <path d="M62 42 Q78 42 78 53 Q78 64 62 64"
+                  fill="none" stroke="#f5f5f7"
+                  stroke-width="6" stroke-linecap="round"/>
+            <!-- крышка -->
+            <rect x="16" y="23" width="50" height="8" rx="4" class="ink"/>
+
+            <!-- красный запрещающий круг -->
+            <circle cx="72" cy="72" r="22" class="no"/>
+            <!-- перекладина -->
+            <rect x="58" y="68.5" width="28" height="7" rx="3.5" class="bg"/>
+          </svg>
+        </div>
+        <h2 class="card__title">Никакой еды рядом</h2>
+        <p class="card__hint">Крошки и жидкость выводят технику из строя</p>
+        <div class="card__details">
+          <p>Одна пролитая чашка — и ноутбуку конец. Ешь на кухне, а за компьютер садись с чистыми и сухими руками.</p>
+        </div>
+      </div>
+    </article>
+
+    <!--ПРАВИЛО 5 — ГИГИЕНА
+         Ладонь и капли воды — типа "мой руки -->
+    <article class="card" tabindex="0" role="button" aria-expanded="false" data-rule="05">
+      <div class="card__bar"></div>
+      <span class="card__status" aria-hidden="true"></span>
+      <div class="card__body">
+        <div class="card__id">RULE_05</div>
+        <div class="sign" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <!-- ладонь -->
+            <rect x="36" y="55" width="36" height="32" rx="6" class="ink"/>
+            <!-- четыре пальца -->
+            <rect x="39" y="34" width="7" height="26" rx="3.5" class="ink"/>
+            <rect x="49" y="28" width="7" height="32" rx="3.5" class="ink"/>
+            <rect x="59" y="32" width="7" height="28" rx="3.5" class="ink"/>
+            <rect x="69" y="42" width="7" height="18" rx="3.5" class="ink"/>
+            <!-- большой палец -->
+            <rect x="24" y="56" width="14" height="8" rx="4" class="ink"/>
+
+            <!-- капли воды -->
+            <circle cx="20" cy="20" r="6" class="hl"/>
+            <circle cx="14" cy="38" r="4" class="hl"/>
+            <circle cx="26" cy="8"  r="5" class="hl"/>
+          </svg>
+        </div>
+        <h2 class="card__title">Чистота и свежий воздух</h2>
+        <p class="card__hint">Мой руки и проветривай комнату</p>
+        <div class="card__details">
+          <p>Грязные руки — грязная клавиатура и мышь. Проветривай комнату каждые 2 часа по 5–10 минут: мозгу нужен кислород.</p>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ПОДВАЛ: счётчик прогресса -->
+  <footer class="footer">
+    <div class="footer__progress" id="progressBox">
+      Изучено: <strong id="progress">0 / 5</strong>
+    </div>
+    <div class="footer__credit">HTML · CSS · SVG · JS</div>
+  </footer>
+
+  <!-- полоса прогресса сверху -->
+  <div class="progress-wrap" aria-hidden="true">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- канвас для конфетти -->
+  <canvas id="confetti"></canvas>
+
+<script>
+// оборачиваю всё в функцию чтобы переменные не торчали в глобальной области
+(function () {
+  'use strict';
+
+  // ключ под которым сохраняю прогресс в localStorage
+  const STORAGE_KEY = 'computer-rules-final';
+
+  // собираю все карточки в массив
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const progressBar = document.getElementById('progressBar');
+  const progressLabel = document.getElementById('progress');
+  const progressBox = document.getElementById('progressBox');
+  let celebrated = false; // чтобы конфетти не запускалось второй раз
+
+  //  СОХРАНЕНИЕ И ЗАГРУЗКА ПРОГРЕССА 
+
+  // достаю из localStorage какие карточки уже открыты
+  function loadProgress() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      saved.forEach(id => {
+        const card = cards.find(c => c.dataset.rule === id);
+        if (card) {
+          card.classList.add('is-open');
+          card.setAttribute('aria-expanded', 'true');
+        }
+      });
+    } catch (e) {} // если localStorage недоступен — просто игнорирую
+  }
+
+  // сохраняю id открытых карточек
+  function saveProgress() {
+    const openIds = cards
+      .filter(c => c.classList.contains('is-open'))
+      .map(c => c.dataset.rule);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(openIds));
+    } catch (e) {}
+  }
+
+  //ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+
+  // считаю сколько открыто, двигаю полосу прогресса, обновляю счётчик
+  function updateUI() {
+    const opened = cards.filter(c => c.classList.contains('is-open')).length;
+    const total = cards.length;
+
+    // ширина полосы в процентах
+    progressBar.style.width = (opened / total) * 100 + '%';
+    progressLabel.textContent = opened + ' / ' + total;
+
+    // если всё открыто — поздравляю и запускаю конфетти
+    if (opened === total) {
+      progressBox.classList.add('done');
+      if (!celebrated) { celebrated = true; launchConfetti(); }
+    } else {
+      progressBox.classList.remove('done');
+      celebrated = false;
+    }
+  }
+
+  // открыть/закрыть карточку
+  function toggleCard(card) {
+    card.classList.toggle('is-open');
+    card.setAttribute('aria-expanded', String(card.classList.contains('is-open')));
+    saveProgress();
+    updateUI();
+  }
+
+  // ОБРАБОТЧИКИ СОБЫТИЙ НА КАРТОЧКАХ 
+  cards.forEach(card => {
+    // блик под курсором — запоминаю координаты мыши
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+    });
+
+    // клик — открыть/закрыть
+    card.addEventListener('click', () => toggleCard(card));
+
+    // с клавиатуры тоже можно: Enter или пробел
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleCard(card);
+      }
+    });
+  });
+
+  // КОНФЕТТИ КОГДА ВСЁ ИЗУЧЕНО
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+
+    // учитываю плотность пикселей на ретине
+    const dpr = window.devicePixelRatio || 1;
+    const W = window.innerWidth, H = window.innerHeight;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
+    const colors = ['#6366f1', '#a855f7', '#10b981', '#f59e0b', '#ec4899'];
+    const particles = [];
+    const count = 160;
+
+    // создаю частицы с рандомными параметрами
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: -20 - Math.random() * 300,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: 2 + Math.random() * 4,
+        w: 6 + Math.random() * 6,
+        h: 4 + Math.random() * 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.25,
+        opacity: 1
+      });
+    }
+
+    let frame = 0;
+    const maxFrames = 260; // примерно 4-5 секунд при 60fps
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        // физика: падают вниз, замедляются, крутятся
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05;
+        p.vx *= 0.995;
+        p.rot += p.rotSpeed;
+        // плавно исчезают
+        p.opacity = Math.max(0, 1 - frame / maxFrames);
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        // roundRect есть не везде, поэтому проверяю
+        if (ctx.roundRect) {
+          ctx.roundRect(-p.w / 2, -p.h / 2, p.w, p.h, 1.5);
+        } else {
+          ctx.rect(-p.w / 2, -p.h / 2, p.w, p.h);
+        }
+        ctx.fill();
+        ctx.restore();
+      });
+
+      frame++;
+      if (frame < maxFrames) requestAnimationFrame(animate);
+      else ctx.clearRect(0, 0, W, H); // очищаю в конце
+    }
+    animate();
+  }
+
+  //  СБРОС ПРОГРЕССА (двойной клик по счётчику) 
+  progressBox.addEventListener('dblclick', () => {
+    if (confirm('Сбросить весь прогресс?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      cards.forEach(c => {
+        c.classList.remove('is-open');
+        c.setAttribute('aria-expanded', 'false');
+      });
+      celebrated = false;
+      updateUI();
+    }
+  });
+
+  // запускаю всё при загрузке
+  loadProgress();
+  updateUI();
+})();
+</script>
+
+</body>
+</html>
